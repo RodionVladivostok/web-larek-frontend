@@ -19,6 +19,6 @@ export class Success extends Component<ISuccess> {
 
 	set basket(products: IProduct[]) {
 		const sum = products.reduce((sum, product) => sum + product.price, 0)
-		this._description.innerText = `Списано ${sum} синапсов`
+		this._description.textContent = `Списано ${sum} синапсов`
 	}
 }

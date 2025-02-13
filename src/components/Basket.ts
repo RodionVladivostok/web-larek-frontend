@@ -30,6 +30,6 @@ export class Basket extends Component<IBasket> {
 				}))
 		)
 		this._basketButton.disabled = products.length === 0
-		this._basketPrice.innerText = products.reduce((sum, product) => sum + product.price, 0) + ' синапсов'
+		this._basketPrice.textContent = products.reduce((sum, product) => sum + product.price, 0) + ' синапсов'
 	}
 }

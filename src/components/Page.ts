@@ -18,7 +18,7 @@ export class Page extends Component<any> {
 	}
 
 	set basketCount(value: number) {
-		this._basketCount.innerText = value.toString()
+		this._basketCount.textContent = value.toString()
 	}
 
 	set locked(value: boolean) {

@@ -23,12 +23,12 @@ export class BasketItem extends Component<IBasketItem> {
 	}
 
 	set product(product: IProduct) {
-		this._title.innerText = product.title
-		this._price.innerText = `${product.price} синапсов`
+		this._title.textContent = product.title
+		this._price.textContent = `${product.price} синапсов`
 		this._id = product.id
 	}
 
 	set index(value: number) {
-		this._index.innerText = value.toString()
+		this._index.textContent = value.toString()
 	}
 }

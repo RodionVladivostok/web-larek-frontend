@@ -43,10 +43,6 @@ export class Order extends Component<IOrder> {
 		}
 	}
 
-	set address(value: string) {
-		this._addressInput.value = value
-	}
-
 	validate(data: IOrderFormData) {
 		this._orderBtn.disabled = !data.payment || !data.address
 	}

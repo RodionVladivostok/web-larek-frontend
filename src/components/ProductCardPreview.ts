@@ -32,7 +32,7 @@ export class ProductCardPreview extends Component<IProductCardPreview> {
 	}
 
 	set description(value: string) {
-			this._description.innerText = value
+			this._description.textContent = value
 	}
 
 	set image(value: string) {
@@ -41,7 +41,7 @@ export class ProductCardPreview extends Component<IProductCardPreview> {
 
 
 	set title(value: string) {
-		this._title.innerText = value
+		this._title.textContent = value
 	}
 
 	set price(value: number|null) {
@@ -54,7 +54,7 @@ export class ProductCardPreview extends Component<IProductCardPreview> {
 	}
 
 	set category(value: TCategory) {
-		this._category.innerText = value
+		this._category.textContent = value
 		this._category.classList.add(CATEGORY_CLASS_LIST[value])
 	}
 
