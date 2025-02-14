@@ -76,8 +76,7 @@ events.on('basket:open', () => {
 })
 
 events.on('card:delete-item', ({id}: {id: string}) => {
-	appState.basket = appState.basket
-		.filter(product => product.id !== id)
+	appState.basket = appState.basket.filter(product => product.id !== id)
 	page.basketCount = appState.basket.length
 	renderBasket()
 })
