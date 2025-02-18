@@ -2,7 +2,7 @@ import './scss/styles.scss'
 import { API_URL } from './utils/constants'
 import { Api } from './components/base/api'
 import { EventEmitter } from './components/base/events'
-import { IProductResponse, TPayment } from './types'
+import { IProductResponse, TPayment } from './types';
 import { AppState } from './components/AppState'
 import { Gallery } from './components/Gallery'
 import { cloneTemplate, ensureElement } from './utils/utils'
@@ -49,8 +49,8 @@ events.on('catalog:changed', () => {
 })
 
 events.on('card:select', ({id}: {id: string}) => {
-	const product = appState.catalog.find(product => product.id === id)
-	const inBasket = appState.basket.some(p => p.id === product.id)
+	const product = appState.getProduct(id)
+	const inBasket = appState.isProductInBasket(id)
 	modal.render({
 		content: new ProductCardPreview(cloneTemplate(cardPreviewTemplate), events).render({inBasket, ...product})
 	})
@@ -60,7 +60,7 @@ events.on('card:select', ({id}: {id: string}) => {
 events.on('card:to-basket', ({id}: {id: string}) => {
 	const product = appState.catalog.find(product => product.id === id)
 	appState.addToBasket(product)
-	page.basketCount = appState.basket.length
+	page.basketCount = appState.basketCount
 	modal.close()
 	page.locked = false
 })
@@ -76,67 +76,65 @@ events.on('basket:open', () => {
 })
 
 events.on('card:delete-item', ({id}: {id: string}) => {
-	appState.basket = appState.basket.filter(product => product.id !== id)
-	page.basketCount = appState.basket.length
+	appState.deleteFromBasket(id)
+	page.basketCount = appState.basketCount
 	renderBasket()
 })
 
 events.on('basket:order', () => {
 	modal.render({
-		content: order.render()
+		content: order.render({
+			address: appState.address,
+			payment: appState.payment,
+		})
 	})
 })
 
 events.on('payment:change', ({payment}: {payment: TPayment}) => {
-	order.payment = payment
 	appState.payment = payment
-	order.validate({
-		address: appState.address,
-		payment: appState.payment,
-	})
+	order.payment = payment
+	order.isFormValid = appState.isPaymentAndAddressValid
 })
 
 events.on('address:changed', ({address}: {address: string}) => {
 	appState.address = address
-	order.validate({
-		address: appState.address,
-		payment: appState.payment,
-	})
+	order.isFormValid = appState.isPaymentAndAddressValid
 })
 
 events.on('basket:contacts', () => {
 	modal.render({
-		content: contacts.render()
+		content: contacts.render({
+			email: appState.email,
+			phone: appState.phone,
+		})
 	})
 })
 
 events.on('email:changed', ({email}: {email: string}) => {
 	appState.email = email
-	contacts.validate({
-		email,
-		phone: appState.phone
-	})
+	contacts.isFormValid = appState.isPhoneAndEmailValid
 })
 
 events.on('phone:changed', ({phone}: {phone: string}) => {
 	appState.phone = phone
-	contacts.validate({
-		email: appState.email,
-		phone
-	})
+	contacts.isFormValid = appState.isPhoneAndEmailValid
 })
 
 events.on('basket:success', () => {
 	modal.render({
 		content: new Success(cloneTemplate(successTemplate), events).render({basket: appState.basket})
 	})
-	appState.basket = []
-	page.basketCount = 0
+	appState.clearBasket()
+	page.basketCount = appState.basketCount
+	appState.clearOrderAndContactFields()
 })
 
 const renderBasket = () => {
 	modal.render({
-		content: new Basket(cloneTemplate(basketTemplate), events).render({products: appState.basket})
+		content: new Basket(cloneTemplate(basketTemplate), events).render({
+			products: appState.basket,
+			basketSum: appState.basketSum
+		})
 	})
 }
 

@@ -1,6 +1,6 @@
 import { Component } from './base/Component'
 import { IEvents } from './base/events'
-import { IOrder, IOrderFormData, TPayment } from '../types'
+import { IOrder, TPayment } from '../types'
 import { ensureElement } from '../utils/utils'
 
 
@@ -21,8 +21,8 @@ export class Order extends Component<IOrder> {
 		this._cardPayment.addEventListener('click', () => this.events.emit('payment:change', {payment: 'card'}))
 		this._cashPayment.addEventListener('click', () => this.events.emit('payment:change', {payment: 'cash'}))
 		this._addressInput.addEventListener('input', (e) => {
-			const value = (e.target as HTMLInputElement).value
-			this.events.emit('address:changed', {address: value})
+			const address = (e.target as HTMLInputElement).value
+			this.events.emit('address:changed', {address})
 		})
 		this._orderBtn.addEventListener('click', () => this.events.emit('basket:contacts'))
 	}
@@ -43,7 +43,11 @@ export class Order extends Component<IOrder> {
 		}
 	}
 
-	validate(data: IOrderFormData) {
-		this._orderBtn.disabled = !data.payment || !data.address
+	set address(value: string) {
+		this._addressInput.value = value
+	}
+
+	set isFormValid(value: boolean) {
+		this._orderBtn.disabled = !value
 	}
 }

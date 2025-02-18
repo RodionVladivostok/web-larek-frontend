@@ -1,9 +1,9 @@
 import { Component } from './base/Component'
 import { IEvents } from './base/events'
 import { ensureElement } from '../utils/utils'
-import { IContactsFormData } from '../types';
+import { IContacts } from '../types'
 
-export class Contacts extends Component<null> {
+export class Contacts extends Component<IContacts> {
 	protected _emailInput: HTMLInputElement
 	protected _phoneInput: HTMLInputElement
 	protected _payButton: HTMLButtonElement
@@ -29,7 +29,15 @@ export class Contacts extends Component<null> {
 		})
 	}
 
-	validate(data: IContactsFormData) {
-		this._payButton.disabled = !data.phone || !data.email
+	set email(value: string) {
+		this._emailInput.value = value
+	}
+
+	set phone(value: string) {
+		this._phoneInput.value = value
+	}
+
+	set isFormValid(value: boolean) {
+		this._payButton.disabled = !value
 	}
 }

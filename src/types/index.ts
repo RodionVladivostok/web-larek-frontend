@@ -18,6 +18,11 @@ export interface IProductResponse {
 
 export interface IAppState {
 	catalog: IProduct[]
+	basket: IProduct[]
+	payment: string
+	address: string
+	email: string
+	phone: string
 }
 
 export interface IGallery {
@@ -30,6 +35,7 @@ export interface IModal {
 
 export interface IBasket {
 	products: IProduct[]
+	basketSum: number
 }
 
 export interface IBasketItem {
@@ -52,14 +58,10 @@ export type TPayment = 'card'|'cash'|null
 
 export interface IOrder {
 	payment: TPayment
-}
-
-export interface IOrderFormData {
 	address: string
-	payment: TPayment
 }
 
-export interface IContactsFormData {
+export interface IContacts {
 	email: string
 	phone: string
 }
