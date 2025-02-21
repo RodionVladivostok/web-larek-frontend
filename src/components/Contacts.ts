@@ -3,6 +3,7 @@ import { IEvents } from './base/events'
 import { ensureElement } from '../utils/utils'
 import { IContacts } from '../types'
 
+
 export class Contacts extends Component<IContacts> {
 	protected _emailInput: HTMLInputElement
 	protected _phoneInput: HTMLInputElement
@@ -25,7 +26,7 @@ export class Contacts extends Component<IContacts> {
 		})
 		this._payButton.addEventListener('click', (e) => {
 			e.preventDefault()
-			this.events.emit('basket:success')
+			this.events.emit('order:create')
 		})
 	}
 

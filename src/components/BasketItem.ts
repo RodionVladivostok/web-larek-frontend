@@ -19,7 +19,10 @@ export class BasketItem extends Component<IBasketItem> {
 		this._index = ensureElement<HTMLSpanElement>('.basket__item-index', this.container)
 		this._itemDeleteButton = ensureElement<HTMLButtonElement>('.basket__item-delete', this.container)
 
-		this._itemDeleteButton.addEventListener('click', () => this.events.emit('card:delete-item', {id: this._id}))
+		this._itemDeleteButton.addEventListener('click', () => {
+			this.container.remove()
+			this.events.emit('card:delete-item', {id: this._id})
+		})
 	}
 
 	set product(product: IProduct) {

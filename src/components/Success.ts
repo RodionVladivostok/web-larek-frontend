@@ -1,7 +1,7 @@
 import { Component } from './base/Component'
 import { IEvents } from './base/events'
 import { ensureElement } from '../utils/utils'
-import { IProduct, ISuccess } from '../types/'
+import { ISuccess } from '../types/'
 
 
 export class Success extends Component<ISuccess> {
@@ -17,8 +17,7 @@ export class Success extends Component<ISuccess> {
 		this._successBtn.addEventListener('click', () => this.events.emit('modal:close'))
 	}
 
-	set basket(products: IProduct[]) {
-		const sum = products.reduce((sum, product) => sum + product.price, 0)
+	set sum(sum: number) {
 		this._description.textContent = `Списано ${sum} синапсов`
 	}
 }

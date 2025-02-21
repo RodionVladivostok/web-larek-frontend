@@ -2,7 +2,7 @@ import './scss/styles.scss'
 import { API_URL } from './utils/constants'
 import { Api } from './components/base/api'
 import { EventEmitter } from './components/base/events'
-import { IProductResponse, TPayment } from './types';
+import { IOrderResponse, IProductResponse, TPayment } from './types'
 import { AppState } from './components/AppState'
 import { Gallery } from './components/Gallery'
 import { cloneTemplate, ensureElement } from './utils/utils'
@@ -14,6 +14,7 @@ import { Basket } from './components/Basket'
 import { Order } from './components/Order'
 import { Contacts } from './components/Contacts'
 import { Success } from './components/Success'
+import { BasketItem } from './components/BasketItem'
 
 
 const api = new Api(API_URL)
@@ -28,12 +29,15 @@ const basketTemplate = ensureElement<HTMLTemplateElement>('#basket')
 const orderTemplate = ensureElement<HTMLTemplateElement>('#order')
 const contactsTemplate = ensureElement<HTMLTemplateElement>('#contacts')
 const successTemplate = ensureElement<HTMLTemplateElement>('#success')
+const basketItemTemplate = ensureElement<HTMLTemplateElement>('#card-basket')
 
 const gallery = new Gallery(galleryTemplate, events)
 const modal = new Modal(modalTemplate, events)
 const page = new Page(document.body, events)
 const order = new Order(cloneTemplate(orderTemplate), events)
 const contacts = new Contacts(cloneTemplate(contactsTemplate), events)
+const success = new Success(cloneTemplate(successTemplate), events)
+const basket = new Basket(cloneTemplate(basketTemplate), events)
 
 api
 	.get('/product')
@@ -71,14 +75,26 @@ events.on('modal:close', () => {
 })
 
 events.on('basket:open', () => {
+	const basketItems: HTMLElement[] = appState.basket.map(
+		(product, i) => new BasketItem(cloneTemplate(basketItemTemplate), events)
+			.render({
+				product,
+				index: i + 1
+			}))
+	modal.render({
+		content: basket.render({
+			basketItems,
+			basketSum: appState.basketSum
+		})
+	})
 	page.locked = true
-	renderBasket()
 })
 
 events.on('card:delete-item', ({id}: {id: string}) => {
 	appState.deleteFromBasket(id)
 	page.basketCount = appState.basketCount
-	renderBasket()
+	basket.basketSum = appState.basketSum
+	basket.updateIndexes()
 })
 
 events.on('basket:order', () => {
@@ -120,23 +136,25 @@ events.on('phone:changed', ({phone}: {phone: string}) => {
 	contacts.isFormValid = appState.isPhoneAndEmailValid
 })
 
-events.on('basket:success', () => {
-	modal.render({
-		content: new Success(cloneTemplate(successTemplate), events).render({basket: appState.basket})
-	})
-	appState.clearBasket()
-	page.basketCount = appState.basketCount
-	appState.clearOrderAndContactFields()
-})
-
-const renderBasket = () => {
-	modal.render({
-		content: new Basket(cloneTemplate(basketTemplate), events).render({
-			products: appState.basket,
-			basketSum: appState.basketSum
+events.on('order:create', () => {
+	const orderData = {
+		payment: appState.payment,
+		email: appState.email,
+		phone: appState.phone,
+		address: appState.address,
+		total: appState.basketSum,
+		items: appState.basket.map(p => p.id)
+	}
+	api
+		.post('/order', orderData)
+		.then((res: IOrderResponse) => {
+			modal.render({
+				content: success.render({sum: res.total})
+			})
+			appState.clearBasket()
+			page.basketCount = appState.basketCount
+			appState.clearOrderAndContactFields()
+			contacts.isFormValid = appState.isPhoneAndEmailValid
+			order.isFormValid = appState.isPaymentAndAddressValid
 		})
-	})
-}
-
-
-
+})

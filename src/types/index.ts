@@ -16,6 +16,11 @@ export interface IProductResponse {
 	total: number
 }
 
+export interface IOrderResponse {
+	id: string
+	total: number
+}
+
 export interface IAppState {
 	catalog: IProduct[]
 	basket: IProduct[]
@@ -34,7 +39,7 @@ export interface IModal {
 }
 
 export interface IBasket {
-	products: IProduct[]
+	basketItems: HTMLElement[]
 	basketSum: number
 }
 
@@ -67,5 +72,5 @@ export interface IContacts {
 }
 
 export interface ISuccess {
-	basket: IProduct[]
+	sum: number
 }

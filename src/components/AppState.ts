@@ -1,6 +1,7 @@
 import { IAppState, IProduct, TPayment } from '../types'
 import { Model } from './base/Model'
 
+
 export class AppState extends Model<IAppState>{
 	catalog: IProduct[] = []
 	basket: IProduct[] = []
