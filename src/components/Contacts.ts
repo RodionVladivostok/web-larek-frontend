@@ -38,7 +38,7 @@ export class Contacts extends Component<IContacts> {
 		this._phoneInput.value = value
 	}
 
-	set isFormValid(value: boolean) {
+	set payBtnDisabled(value: boolean) {
 		this._payButton.disabled = !value
 	}
 }

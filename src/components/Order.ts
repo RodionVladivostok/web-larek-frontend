@@ -47,7 +47,7 @@ export class Order extends Component<IOrder> {
 		this._addressInput.value = value
 	}
 
-	set isFormValid(value: boolean) {
+	set orderBtnDisabled(value: boolean) {
 		this._orderBtn.disabled = !value
 	}
 }

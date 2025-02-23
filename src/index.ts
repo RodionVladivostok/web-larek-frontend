@@ -2,7 +2,7 @@ import './scss/styles.scss'
 import { API_URL } from './utils/constants'
 import { Api } from './components/base/api'
 import { EventEmitter } from './components/base/events'
-import { IOrderResponse, IProductResponse, TPayment } from './types'
+import { IOrderPayload, IOrderResponse, IProductResponse, TPayment } from './types'
 import { AppState } from './components/AppState'
 import { Gallery } from './components/Gallery'
 import { cloneTemplate, ensureElement } from './utils/utils'
@@ -65,8 +65,7 @@ events.on('card:to-basket', ({id}: {id: string}) => {
 	const product = appState.catalog.find(product => product.id === id)
 	appState.addToBasket(product)
 	page.basketCount = appState.basketCount
-	modal.close()
-	page.locked = false
+	events.emit('modal:close')
 })
 
 events.on('modal:close', () => {
@@ -100,48 +99,45 @@ events.on('card:delete-item', ({id}: {id: string}) => {
 events.on('basket:order', () => {
 	modal.render({
 		content: order.render({
-			address: appState.address,
-			payment: appState.payment,
+			address: appState.order.address,
+			payment: appState.order.payment,
 		})
 	})
 })
 
 events.on('payment:change', ({payment}: {payment: TPayment}) => {
-	appState.payment = payment
+	appState.order.payment = payment
 	order.payment = payment
-	order.isFormValid = appState.isPaymentAndAddressValid
+	order.orderBtnDisabled = appState.isPaymentAndAddressValid
 })
 
 events.on('address:changed', ({address}: {address: string}) => {
-	appState.address = address
-	order.isFormValid = appState.isPaymentAndAddressValid
+	appState.order.address = address
+	order.orderBtnDisabled = appState.isPaymentAndAddressValid
 })
 
 events.on('basket:contacts', () => {
 	modal.render({
 		content: contacts.render({
-			email: appState.email,
-			phone: appState.phone,
+			email: appState.order.email,
+			phone: appState.order.phone,
 		})
 	})
 })
 
 events.on('email:changed', ({email}: {email: string}) => {
-	appState.email = email
-	contacts.isFormValid = appState.isPhoneAndEmailValid
+	appState.order.email = email
+	contacts.payBtnDisabled = appState.isPhoneAndEmailValid
 })
 
 events.on('phone:changed', ({phone}: {phone: string}) => {
-	appState.phone = phone
-	contacts.isFormValid = appState.isPhoneAndEmailValid
+	appState.order.phone = phone
+	contacts.payBtnDisabled = appState.isPhoneAndEmailValid
 })
 
 events.on('order:create', () => {
-	const orderData = {
-		payment: appState.payment,
-		email: appState.email,
-		phone: appState.phone,
-		address: appState.address,
+	const orderData: IOrderPayload = {
+		...appState.order,
 		total: appState.basketSum,
 		items: appState.basket.map(p => p.id)
 	}
@@ -153,8 +149,9 @@ events.on('order:create', () => {
 			})
 			appState.clearBasket()
 			page.basketCount = appState.basketCount
-			appState.clearOrderAndContactFields()
-			contacts.isFormValid = appState.isPhoneAndEmailValid
-			order.isFormValid = appState.isPaymentAndAddressValid
+			appState.clearOrderData()
+			contacts.payBtnDisabled = appState.isPhoneAndEmailValid
+			order.orderBtnDisabled = appState.isPaymentAndAddressValid
 		})
+		.catch(err => console.log(err))
 })

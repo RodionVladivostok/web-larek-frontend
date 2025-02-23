@@ -24,10 +24,7 @@ export interface IOrderResponse {
 export interface IAppState {
 	catalog: IProduct[]
 	basket: IProduct[]
-	payment: string
-	address: string
-	email: string
-	phone: string
+	order: IOrderData
 }
 
 export interface IGallery {
@@ -73,4 +70,16 @@ export interface IContacts {
 
 export interface ISuccess {
 	sum: number
+}
+
+export interface IOrderData {
+	payment: TPayment
+	address: string
+	phone: string
+	email: string
+}
+
+export interface IOrderPayload extends IOrderData {
+	total: number
+	items: string[]
 }

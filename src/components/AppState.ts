@@ -1,14 +1,16 @@
-import { IAppState, IProduct, TPayment } from '../types'
+import { IAppState, IOrderData, IProduct } from '../types'
 import { Model } from './base/Model'
 
 
 export class AppState extends Model<IAppState>{
 	catalog: IProduct[] = []
 	basket: IProduct[] = []
-	payment: TPayment = null
-	address = ''
-	email = ''
-	phone = ''
+	order: IOrderData = {
+		payment: null,
+		address: '',
+		phone: '',
+		email: '',
+	}
 
 	setCatalog(products: IProduct[]) {
 		this.catalog = products
@@ -44,17 +46,19 @@ export class AppState extends Model<IAppState>{
 	}
 
 	get isPhoneAndEmailValid() {
-		return !!(this.phone && this.email)
+		return !!(this.order.phone && this.order.email)
 	}
 
 	get isPaymentAndAddressValid() {
-		return !!(this.payment && this.address)
+		return !!(this.order.payment && this.order.address)
 	}
 
-	clearOrderAndContactFields() {
-		this.payment = null
-		this.address = ''
-		this.phone = ''
-		this.email = ''
+	clearOrderData() {
+		this.order = {
+			payment: null,
+			address: '',
+			phone: '',
+			email: '',
+		}
 	}
 }
